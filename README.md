@@ -6,8 +6,11 @@ It uses Pillow + KaTeX + Selenium + Chrome/Chromium (because it supports transpa
 
 ## Requirements:
 
--   The python packages listed in requirements.txt
 -   Chrome or chromium installed
+
+## Installation:
+
+Run `pip install git+https://github.com/alvesvaren/python-latex-render`
 
 ## Usage (CLI):
 
