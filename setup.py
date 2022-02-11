@@ -4,8 +4,8 @@ with open("README.md") as file:
     long_description = file.read()
 
 setuptools.setup(
-    name="latex-render",
-    version="0.0.3",
+    name="latex_render",
+    version="0.0.5",
     author="Alve Svarén",
     author_email="alve@hotmail.se",
     description="A simple library and cli to render latex code to images",
