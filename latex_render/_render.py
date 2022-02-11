@@ -5,6 +5,7 @@ from io import BytesIO
 import json
 from time import sleep
 from base64 import b64encode
+import contextlib
 
 file = Path(__file__).parent / "site" / "page.html"
 
@@ -22,8 +23,9 @@ def autocrop_image(image, border=0):
 
     return cropped_image
 
+@contextlib.contextmanager
+def latex_session():
 
-def render(latex, font_size=24, color="black", border=8):
     options = webdriver.ChromeOptions()
     options.add_argument("--force-device-scale-factor=1.0")
     options.add_argument("--headless")
@@ -42,20 +44,29 @@ def render(latex, font_size=24, color="black", border=8):
 
     driver.get(file.as_uri())
 
-    driver.execute_script(
-        f"document.body.style.fontSize = '{font_size}px'; document.body.style.color = '{color}'"
-    )
-    toSetLatex = f'katex.render(String.raw`{latex}`, document.querySelector("#math-render-target"), {{displayMode: true}})'
-    driver.set_window_size(1000, 1000)
-    driver.execute_script(toSetLatex)
 
-    sleep(0.02)
+    try:
+        def _render(latex, font_size=24, color="black", border=8):
+            driver.execute_script(
+                f"document.body.style.fontSize = '{font_size}px'; document.body.style.color = '{color}'"
+            )
+            toSetLatex = f'katex.render(String.raw`{latex}`, document.querySelector("#math-render-target"), {{displayMode: true}})'
+            driver.set_window_size(1000, 1000)
+            driver.execute_script(toSetLatex)
 
-    image = driver.find_element_by_id("math-render-target").screenshot_as_png
-    driver.close()
+            sleep(0.02)
 
-    new_img = Image.open(BytesIO(image))
-    return autocrop_image(new_img, border)
+            image = driver.find_element_by_id("math-render-target").screenshot_as_png
+            new_img = Image.open(BytesIO(image))
+            return autocrop_image(new_img, border)
+        yield _render
+
+    finally:
+        driver.close()
+
+def render(latex, font_size=24, color="black", border=8):
+    with latex_session() as render:
+        return render(latex, font_size, color, border)
 
 
 def render_to_file(latex, file, font_size=24, color="black", border=8):
@@ -67,3 +78,4 @@ def render_as_uri(latex, font_size=24, color="black", border=8):
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     return "data:image/png;base64," + b64encode(buffer.getvalue()).decode("ascii")
+

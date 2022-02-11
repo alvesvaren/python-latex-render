@@ -1,7 +1,7 @@
 from . import render_to_file
 import argparse
 
-parser = argparse.ArgumentParser(description="Process some integers.")
+parser = argparse.ArgumentParser(description="Render latex code to image")
 
 parser.add_argument("latex", type=str, help="LaTeX code to render")
 parser.add_argument("--output", "-o", type=str, help="Output file")

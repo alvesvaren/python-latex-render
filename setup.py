@@ -5,7 +5,7 @@ with open("README.md") as file:
 
 setuptools.setup(
     name="latex_render",
-    version="0.0.5",
+    version="0.0.6",
     author="Alve Svarén",
     author_email="alve@hotmail.se",
     description="A simple library and cli to render latex code to images",
